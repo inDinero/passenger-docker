@@ -6,8 +6,13 @@ on:
 jobs:
   base-image:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        RUBY_VERSION:
+          - 215
+          - 26
     steps:
       - uses: actions/checkout@v2
-      - run: make build_ruby215
+      - run: make build_ruby${{ matrix.RUBY_VERSION }}
       - run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-      - run: make release_215
+      - run: make release_${{ matrix.RUBY_VERSION }}
