@@ -112,6 +112,9 @@ tag_latest:
 	docker tag $(NAME)-nodejs:$(VERSION) $(NAME)-nodejs:latest
 	docker tag $(NAME)-full:$(VERSION) $(NAME)-full:latest
 
+tag_latest_215:
+	docker tag $(NAME)-ruby215:$(VERSION) $(NAME)-ruby215:latest
+
 release: tag_latest
 	@if ! docker images $(NAME)-customizable | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME)-customizable version $(VERSION) is not yet built. Please run 'make build'"; false; fi
 	@if ! docker images $(NAME)-ruby215 | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME)-ruby215 version $(VERSION) is not yet built. Please run 'make build'"; false; fi
@@ -144,6 +147,11 @@ release: tag_latest
 	docker push $(NAME)-full:latest
 	docker push $(NAME)-full:$(VERSION)
 	@echo "*** Don't forget to create a tag. git tag rel-$(VERSION) && git push origin rel-$(VERSION)"
+
+release_215: tag_latest_215
+	@if ! docker images $(NAME)-ruby215 | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME)-ruby215 version $(VERSION) is not yet built. Please run 'make build'"; false; fi
+	docker push $(NAME)-ruby215:latest
+	docker push $(NAME)-ruby215:$(VERSION)
 
 clean:
 	rm -rf customizable_image
