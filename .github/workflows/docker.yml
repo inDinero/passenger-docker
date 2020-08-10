@@ -1,0 +1,13 @@
+name: Build and push Docker images
+on:
+  push:
+    branches:
+     - master
+jobs:
+  base-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: make build_ruby215
+      - run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+      - run: make release_215
