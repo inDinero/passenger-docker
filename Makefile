@@ -1,4 +1,4 @@
-NAME = phusion/passenger
+NAME = bxggs/passenger
 VERSION = 1.0.11
 # Extra flags for docker build, usable via environment variable.
 # Example: `export EXTRA_BUILD_FLAGS=--no-cache; make build_all`
@@ -10,6 +10,7 @@ all: build_all
 
 build_all: \
 	build_customizable \
+	build_ruby215 \
 	build_ruby23 \
 	build_ruby24 \
 	build_ruby25 \
@@ -25,6 +26,13 @@ build_customizable:
 	rm -rf customizable_image
 	cp -pR image customizable_image
 	docker build $(EXTRA_BUILD_FLAGS) -t $(NAME)-customizable:$(VERSION) --rm customizable_image --no-cache
+
+build_ruby215:
+	rm -rf ruby215_image
+	cp -pR image ruby215_image
+	echo ruby215=1 >> ruby215_image/buildconfig
+	echo final=1 >> ruby215_image/buildconfig
+	docker build $(EXTRA_BUILD_FLAGS) -t $(NAME)-ruby215:$(VERSION) --rm ruby215_image --no-cache
 
 build_ruby23:
 	rm -rf ruby23_image
@@ -78,6 +86,7 @@ build_nodejs:
 build_full:
 	rm -rf full_image
 	cp -pR image full_image
+	echo ruby215=1 >> full_image/buildconfig
 	echo ruby23=1 >> full_image/buildconfig
 	echo ruby24=1 >> full_image/buildconfig
 	echo ruby25=1 >> full_image/buildconfig
@@ -93,6 +102,7 @@ build_full:
 
 tag_latest:
 	docker tag $(NAME)-customizable:$(VERSION) $(NAME)-customizable:latest
+	docker tag $(NAME)-ruby215:$(VERSION) $(NAME)-ruby215:latest
 	docker tag $(NAME)-ruby23:$(VERSION) $(NAME)-ruby23:latest
 	docker tag $(NAME)-ruby24:$(VERSION) $(NAME)-ruby24:latest
 	docker tag $(NAME)-ruby25:$(VERSION) $(NAME)-ruby25:latest
@@ -104,6 +114,7 @@ tag_latest:
 
 release: tag_latest
 	@if ! docker images $(NAME)-customizable | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME)-customizable version $(VERSION) is not yet built. Please run 'make build'"; false; fi
+	@if ! docker images $(NAME)-ruby215 | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME)-ruby215 version $(VERSION) is not yet built. Please run 'make build'"; false; fi
 	@if ! docker images $(NAME)-ruby23 | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME)-ruby23 version $(VERSION) is not yet built. Please run 'make build'"; false; fi
 	@if ! docker images $(NAME)-ruby24 | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME)-ruby24 version $(VERSION) is not yet built. Please run 'make build'"; false; fi
 	@if ! docker images $(NAME)-ruby25 | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME)-ruby25 version $(VERSION) is not yet built. Please run 'make build'"; false; fi
@@ -114,6 +125,8 @@ release: tag_latest
 	@if ! docker images $(NAME)-full | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME)-full version $(VERSION) is not yet built. Please run 'make build'"; false; fi
 	docker push $(NAME)-customizable:latest
 	docker push $(NAME)-customizable:$(VERSION)
+	docker push $(NAME)-ruby215:latest
+	docker push $(NAME)-ruby215:$(VERSION)
 	docker push $(NAME)-ruby23:latest
 	docker push $(NAME)-ruby23:$(VERSION)
 	docker push $(NAME)-ruby24:latest
@@ -134,6 +147,7 @@ release: tag_latest
 
 clean:
 	rm -rf customizable_image
+	rm -rf ruby215_image
 	rm -rf ruby23_image
 	rm -rf ruby24_image
 	rm -rf ruby25_image
@@ -145,6 +159,7 @@ clean:
 
 clean_images:
 	docker rmi $(NAME)-customizable:latest $(NAME)-customizable:$(VERSION) || true
+	docker rmi $(NAME)-ruby215:latest $(NAME)-ruby215:$(VERSION) || true
 	docker rmi $(NAME)-ruby23:latest $(NAME)-ruby23:$(VERSION) || true
 	docker rmi $(NAME)-ruby24:latest $(NAME)-ruby24:$(VERSION) || true
 	docker rmi $(NAME)-ruby25:latest $(NAME)-ruby25:$(VERSION) || true

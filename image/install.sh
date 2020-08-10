@@ -6,6 +6,7 @@ run /pd_build/enable_repos.sh
 run /pd_build/prepare.sh
 run /pd_build/utilities.sh
 
+if [[ "$ruby215" = 1 ]]; then run /pd_build/ruby-2.1.5.sh; fi
 if [[ "$ruby23" = 1 ]]; then run /pd_build/ruby-2.3.8.sh; fi
 if [[ "$ruby24" = 1 ]]; then run /pd_build/ruby-2.4.10.sh; fi
 if [[ "$ruby25" = 1 ]]; then run /pd_build/ruby-2.5.8.sh; fi
