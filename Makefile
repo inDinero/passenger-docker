@@ -116,7 +116,7 @@ tag_latest_ruby215:
 	docker tag $(NAME)-ruby215:$(VERSION) $(NAME)-ruby215:latest
 
 tag_latest_ruby26:
-	docker tag $(NAME)-ruby215:$(VERSION) $(NAME)-ruby26:latest
+	docker tag $(NAME)-ruby26:$(VERSION) $(NAME)-ruby26:latest
 
 release: tag_latest
 	@if ! docker images $(NAME)-customizable | awk '{ print $$2 }' | grep -q -F $(VERSION); then echo "$(NAME)-customizable version $(VERSION) is not yet built. Please run 'make build'"; false; fi
