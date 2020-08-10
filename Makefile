@@ -1,4 +1,4 @@
-NAME = bxggs/passenger
+NAME = indineroengineering/passenger
 VERSION = 1.0.11
 # Extra flags for docker build, usable via environment variable.
 # Example: `export EXTRA_BUILD_FLAGS=--no-cache; make build_all`
